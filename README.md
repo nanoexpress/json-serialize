@@ -9,7 +9,7 @@ yarn
 ## How to Run
 
 ```bash
-yarn bench # Parse from String
+yarn bench
 ```
 
 ## Results
