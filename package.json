@@ -1,0 +1,16 @@
+{
+  "name": "json-serialize-performance",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "dalisoft <dalisoft@mail.ru>",
+  "scripts": {
+    "bench": "node bench-serialize.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "avsc": "^5.7.0",
+    "fast-json-stringify": "^2.7.3",
+    "msgpackr": "^1.2.10",
+    "slow-json-stringify": "^2.0.1"
+  }
+}
