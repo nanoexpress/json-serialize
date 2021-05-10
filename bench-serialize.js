@@ -1,9 +1,25 @@
 const fastJsonStringify = require('fast-json-stringify');
+const compileJsonStringify = require('compile-json-stringify');
 const { sjs, attr } = require('slow-json-stringify');
 const msgpackR = require('msgpackr');
 const avsc = require('avsc');
 
 const fjs = fastJsonStringify({
+  type: 'object',
+  properties: {
+    status: { type: 'string' },
+    data: {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'object',
+          properties: { id: { type: 'string' }, name: { type: 'string' } }
+        }
+      }
+    }
+  }
+});
+const cjs = compileJsonStringify({
   type: 'object',
   properties: {
     status: { type: 'string' },
@@ -69,6 +85,7 @@ const data = {
 };
 
 console.log('test - f-js', fjs(data));
+console.log('test - c-js', cjs(data));
 console.log('test - s-js', sjsCompile(data));
 console.log('test - avsc', AvroCompile.toString(data));
 console.log('test - mgsp', msgpackR.pack(data).toString());
@@ -87,6 +104,7 @@ const run = () =>
   new Promise((resolve) => {
     bench('JSON.stringify', () => JSON.stringify(data));
     bench('fast-json-stringify', () => fjs(data));
+    bench('compile-json-stringify', () => cjs(data));
     bench('slow-json-stringify', () => sjsCompile(data));
     bench('avsc', () => AvroCompile.toString(data));
     bench('msgpackR', () => msgpackR.pack(data).toString());
