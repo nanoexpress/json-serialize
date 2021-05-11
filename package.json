@@ -9,6 +9,7 @@
   "license": "MIT",
   "dependencies": {
     "avsc": "^5.7.0",
+    "benchmark": "^2.1.4",
     "compile-json-stringify": "^0.1.2",
     "fast-json-stringify": "^2.7.3",
     "msgpackr": "^1.2.10",
