@@ -4,67 +4,97 @@ const benchmark = require('benchmark');
 const SJS = require('slow-json-stringify');
 
 const schema = {
-  title: 'Example Schema',
   type: 'object',
   properties: {
-    firstName: {
-      type: 'string'
-    },
-    lastName: {
-      type: ['string', 'null']
-    },
-    age: {
-      description: 'Age in years',
-      type: 'integer',
-      minimum: 0
+    status: { type: 'string' },
+    data: {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'object',
+          properties: { id: { type: 'string' }, name: { type: 'string' } }
+        }
+      }
     }
   }
 };
 const schemaCJS = {
-  title: 'Example Schema',
   type: 'object',
   properties: {
-    firstName: {
-      type: 'string'
-    },
-    lastName: {
-      type: ['string', 'null']
-    },
-    age: {
-      description: 'Age in years',
-      type: 'number',
-      minimum: 0
+    status: { type: 'string' },
+    data: {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'object',
+          properties: { id: { type: 'string' }, name: { type: 'string' } }
+        }
+      }
     }
   }
 };
 
 const schemaSJS = {
-  firstName: SJS.attr('string'),
-  lastName: SJS.attr('string'),
-  age: SJS.attr('number')
+  status: SJS.attr('string'),
+  data: {
+    user: { id: SJS.attr('string'), name: SJS.attr('string') }
+  }
 };
 
 const arraySchema = {
-  title: 'array schema',
-  type: 'array',
-  items: schema
+  type: 'object',
+  properties: {
+    status: { type: 'string' },
+    data: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          user: {
+            type: 'object',
+            properties: { id: { type: 'string' }, name: { type: 'string' } }
+          }
+        }
+      }
+    }
+  }
 };
 
 const arraySchemaCJS = {
-  title: 'array schema',
-  type: 'array',
-  items: schemaCJS
+  type: 'object',
+  properties: {
+    status: { type: 'string' },
+    data: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          user: {
+            type: 'object',
+            properties: { id: { type: 'string' }, name: { type: 'string' } }
+          }
+        }
+      }
+    }
+  }
 };
 
-const arraySchemaSJS = SJS.attr('array', SJS.sjs(schemaSJS));
+const arraySchemaSJS = {
+  status: SJS.attr('string'),
+  data: SJS.attr('array', {
+    user: { id: SJS.attr('string'), name: SJS.attr('string') }
+  })
+};
 
 const obj = {
-  firstName: 'Matteo',
-  lastName: 'Collina',
-  age: 32
+  status: 'success',
+  data: { user: { id: 'uuid', name: 'John' } }
 };
 
-const multiArray = [obj, obj, obj, obj, obj];
+const multiArray = {
+  ...obj,
+  data: new Array(10).fill(null).map(() => obj.data)
+};
 
 const CJS = require('compile-json-stringify');
 const CJSStringify = CJS(schemaCJS);
@@ -74,9 +104,6 @@ const CJSStringifyString = CJS({ type: 'string' });
 const SJSStringify = SJS.sjs(schemaSJS);
 const SJSStringifyArray = SJS.sjs(arraySchemaSJS);
 const SJSStringifyString = SJS.sjs(SJS.attr('string'));
-
-console.log('TEST [S-JS]', SJSStringify(obj));
-console.log('TEST [S-JS] Array', SJSStringifyArray(multiArray));
 
 const FJS = require('fast-json-stringify');
 const stringify = FJS(schema);
@@ -90,12 +117,6 @@ for (var i = 0; i < 10000; i++) {
   if (i % 100 === 0) {
     str += '"';
   }
-}
-
-Number(str);
-
-for (i = 0; i < 1000 - 5; i++) {
-  multiArray.push(obj);
 }
 
 function createSuite(type, fn) {
