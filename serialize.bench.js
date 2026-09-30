@@ -3,7 +3,7 @@ import compileJsonStringify from 'compile-json-stringify';
 import fastJsonStringify from 'fast-json-stringify';
 import { pack as msgpackR_Pack } from 'msgpackr';
 import { attr, sjs } from 'slow-json-stringify';
-import { assert, bench, describe, it } from 'vitest';
+import { assert, describe, test } from 'vitest';
 
 /**
  * DO NOT TOUCH
@@ -98,19 +98,39 @@ const data = {
 };
 
 describe('validate', () => {
-  it('fast-json-stringify', () => assert.doesNotThrow(() => fjs(data)));
-  it('compile-json-stringify', () => assert.doesNotThrow(() => cjs(data)));
-  it('slow-json-stringify', () => assert.doesNotThrow(() => sjsCompile(data)));
-  it('avsc', () => assert.doesNotThrow(() => AvroCompile.toString(data)));
-  it('msgpackR', () =>
+  test('fast-json-stringify', () => assert.doesNotThrow(() => fjs(data)));
+  test('compile-json-stringify', () => assert.doesNotThrow(() => cjs(data)));
+  test('slow-json-stringify', () => assert.doesNotThrow(() => sjsCompile(data)));
+  test('avsc', () => assert.doesNotThrow(() => AvroCompile.toString(data)));
+  test('msgpackR', () =>
     assert.doesNotThrow(() => msgpackR_Pack(data).toString()));
 });
 
 describe('serialize', () => {
-  bench('JSON.stringify', () => JSON.stringify(data), globalBenchConfig);
-  bench('fast-json-stringify', () => fjs(data), globalBenchConfig);
-  bench('compile-json-stringify', () => cjs(data), globalBenchConfig);
-  bench('slow-json-stringify', () => sjsCompile(data), globalBenchConfig);
-  bench('avsc', () => AvroCompile.toString(data), globalBenchConfig);
-  bench('msgpackR', () => msgpackR_Pack(data).toString(), globalBenchConfig);
+  test('JSON.stringify', async ({ bench }) => {
+    await bench('JSON.stringify', () => JSON.stringify(data)).run(
+      globalBenchConfig
+    );
+  });
+  test('fast-json-stringify', async ({ bench }) => {
+    await bench('fast-json-stringify', () => fjs(data)).run(globalBenchConfig);
+  });
+  test('compile-json-stringify', async ({ bench }) => {
+    await bench('compile-json-stringify', () => cjs(data)).run(
+      globalBenchConfig
+    );
+  });
+  test('slow-json-stringify', async ({ bench }) => {
+    await bench('slow-json-stringify', () => sjsCompile(data)).run(
+      globalBenchConfig
+    );
+  });
+  test('avsc', async ({ bench }) => {
+    await bench('avsc', () => AvroCompile.toString(data)).run(globalBenchConfig);
+  });
+  test('msgpackR', async ({ bench }) => {
+    await bench('msgpackR', () => msgpackR_Pack(data).toString()).run(
+      globalBenchConfig
+    );
+  });
 });

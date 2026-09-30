@@ -11,9 +11,9 @@
   "dependencies": {
     "avsc": "^5.7.9",
     "compile-json-stringify": "^0.1.2",
-    "fast-json-stringify": "^6.3.0",
-    "msgpackr": "^1.11.9",
+    "fast-json-stringify": "^7.0.1",
+    "msgpackr": "^2.1.0",
     "slow-json-stringify": "^2.0.1",
-    "vitest": "^4.1.2"
+    "vitest": "^5.0.3"
   }
 }
