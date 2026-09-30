@@ -1,5 +1,3 @@
-'use strict';
-
 const benchmark = require('benchmark');
 const SJS = require('slow-json-stringify');
 
@@ -111,8 +109,7 @@ const stringifyArray = FJS(arraySchema);
 const stringifyString = FJS({ type: 'string' });
 let str = '';
 
-// eslint-disable-next-line
-for (var i = 0; i < 10000; i++) {
+for (let i = 0; i < 10000; i++) {
   str += i;
   if (i % 100 === 0) {
     str += '"';
@@ -137,71 +134,71 @@ function createSuite(type, fn) {
 }
 
 createSuite('Object', (suite) => {
-  suite.add('JSON.stringify obj', function () {
+  suite.add('JSON.stringify obj', () => {
     JSON.stringify(obj);
   });
 
-  suite.add('fast-json-stringify obj', function () {
+  suite.add('fast-json-stringify obj', () => {
     stringify(obj);
   });
 
-  suite.add('compile-json-stringify obj', function () {
+  suite.add('compile-json-stringify obj', () => {
     CJSStringify(obj);
   });
-  suite.add('slow-json-stringify obj', function () {
+  suite.add('slow-json-stringify obj', () => {
     SJSStringify(obj);
   });
 });
 
 createSuite('Array', (suite) => {
-  suite.add('JSON.stringify array', function () {
+  suite.add('JSON.stringify array', () => {
     JSON.stringify(multiArray);
   });
 
-  suite.add('fast-json-stringify array', function () {
+  suite.add('fast-json-stringify array', () => {
     stringifyArray(multiArray);
   });
 
-  suite.add('compile-json-stringify array', function () {
+  suite.add('compile-json-stringify array', () => {
     CJSStringifyArray(multiArray);
   });
-  suite.add('slow-json-stringify array', function () {
+  suite.add('slow-json-stringify array', () => {
     SJSStringifyArray(multiArray);
   });
 });
 
 createSuite('Long string', (suite) => {
-  suite.add('JSON.stringify long string', function () {
+  suite.add('JSON.stringify long string', () => {
     JSON.stringify(str);
   });
 
-  suite.add('fast-json-stringify long string', function () {
+  suite.add('fast-json-stringify long string', () => {
     stringifyString(str);
   });
 
-  suite.add('compile-json-stringify long string', function () {
+  suite.add('compile-json-stringify long string', () => {
     CJSStringifyString(str);
   });
 
-  suite.add('slow-json-stringify long string', function () {
+  suite.add('slow-json-stringify long string', () => {
     CJSStringifyString(str);
   });
 });
 
 createSuite('Short string', (suite) => {
-  suite.add('JSON.stringify short string', function () {
+  suite.add('JSON.stringify short string', () => {
     JSON.stringify('hello world');
   });
 
-  suite.add('fast-json-stringify short string', function () {
+  suite.add('fast-json-stringify short string', () => {
     stringifyString('hello world');
   });
 
-  suite.add('compile-json-stringify short string', function () {
+  suite.add('compile-json-stringify short string', () => {
     CJSStringifyString('hello world');
   });
 
-  suite.add('slow-json-stringify short string', function () {
+  suite.add('slow-json-stringify short string', () => {
     SJSStringifyString('hello world');
   });
 });

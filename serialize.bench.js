@@ -100,7 +100,8 @@ const data = {
 describe('validate', () => {
   test('fast-json-stringify', () => assert.doesNotThrow(() => fjs(data)));
   test('compile-json-stringify', () => assert.doesNotThrow(() => cjs(data)));
-  test('slow-json-stringify', () => assert.doesNotThrow(() => sjsCompile(data)));
+  test('slow-json-stringify', () =>
+    assert.doesNotThrow(() => sjsCompile(data)));
   test('avsc', () => assert.doesNotThrow(() => AvroCompile.toString(data)));
   test('msgpackR', () =>
     assert.doesNotThrow(() => msgpackR_Pack(data).toString()));
@@ -126,7 +127,9 @@ describe('serialize', () => {
     );
   });
   test('avsc', async ({ bench }) => {
-    await bench('avsc', () => AvroCompile.toString(data)).run(globalBenchConfig);
+    await bench('avsc', () => AvroCompile.toString(data)).run(
+      globalBenchConfig
+    );
   });
   test('msgpackR', async ({ bench }) => {
     await bench('msgpackR', () => msgpackR_Pack(data).toString()).run(
