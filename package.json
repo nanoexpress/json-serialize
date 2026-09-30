@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "Davlatjon Shavkatov <opensource@dalisoft.uz>",
   "type": "module",
+  "packageManager": "bun@1.4.2",
   "scripts": {
     "bench": "vitest bench ."
   },
