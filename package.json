@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "biome check . && rumdl check .",
     "format": "biome check --write . && rumdl fmt .",
-    "test": "node --test tests/",
+    "test": "node --test tests",
     "bench": "node tests/serialize.bench.js",
     "prepare": "lefthook install"
   },
