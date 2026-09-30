@@ -17,6 +17,11 @@ jobs:
         with:
           bun-version: 1.4.2
 
+      - name: Use Node.js 26 (node:test runtime)
+        uses: actions/setup-node@v7
+        with:
+          node-version: 26
+
       - name: Cache bun install cache
         uses: actions/cache@v6
         with:
