@@ -1,21 +1,18 @@
+// Native benchmark runner (no test framework needed).
+// Same measurement shape as before: warmup, then N timed iterations.
+import { performance } from 'node:perf_hooks';
 import avsc from 'avsc';
 import compileJsonStringify from 'compile-json-stringify';
 import fastJsonStringify from 'fast-json-stringify';
 import { pack as msgpackR_Pack } from 'msgpackr';
 import { attr, sjs } from 'slow-json-stringify';
-import { assert, describe, test } from 'vitest';
 
 /**
  * DO NOT TOUCH
  * THIS IS TESTING CONSTANT
  */
-/** @type {import('vitest').BenchOptions} */
-const globalBenchConfig = {
-  iterations: 10_000_000,
-  warmupIterations: 1_000,
-  now: process.now,
-  throws: true
-};
+const ITERATIONS = 10_000_000;
+const WARMUP_ITERATIONS = 1_000;
 
 const fjs = fastJsonStringify({
   type: 'object',
@@ -91,49 +88,36 @@ const AvroCompile = avsc.Type.forSchema({
   ]
 });
 
-// Data
 const data = {
   status: 'success',
   data: { user: { id: 'uuid', name: 'John' } }
 };
 
-describe('validate', () => {
-  test('fast-json-stringify', () => assert.doesNotThrow(() => fjs(data)));
-  test('compile-json-stringify', () => assert.doesNotThrow(() => cjs(data)));
-  test('slow-json-stringify', () =>
-    assert.doesNotThrow(() => sjsCompile(data)));
-  test('avsc', () => assert.doesNotThrow(() => AvroCompile.toString(data)));
-  test('msgpackR', () =>
-    assert.doesNotThrow(() => msgpackR_Pack(data).toString()));
-});
+const benches = {
+  'JSON.stringify': () => JSON.stringify(data),
+  'fast-json-stringify': () => fjs(data),
+  'compile-json-stringify': () => cjs(data),
+  'slow-json-stringify': () => sjsCompile(data),
+  avsc: () => AvroCompile.toString(data),
+  msgpackR: () => msgpackR_Pack(data).toString()
+};
 
-describe('serialize', () => {
-  test('JSON.stringify', async ({ bench }) => {
-    await bench('JSON.stringify', () => JSON.stringify(data)).run(
-      globalBenchConfig
-    );
-  });
-  test('fast-json-stringify', async ({ bench }) => {
-    await bench('fast-json-stringify', () => fjs(data)).run(globalBenchConfig);
-  });
-  test('compile-json-stringify', async ({ bench }) => {
-    await bench('compile-json-stringify', () => cjs(data)).run(
-      globalBenchConfig
-    );
-  });
-  test('slow-json-stringify', async ({ bench }) => {
-    await bench('slow-json-stringify', () => sjsCompile(data)).run(
-      globalBenchConfig
-    );
-  });
-  test('avsc', async ({ bench }) => {
-    await bench('avsc', () => AvroCompile.toString(data)).run(
-      globalBenchConfig
-    );
-  });
-  test('msgpackR', async ({ bench }) => {
-    await bench('msgpackR', () => msgpackR_Pack(data).toString()).run(
-      globalBenchConfig
-    );
-  });
-});
+const results = [];
+for (const [name, fn] of Object.entries(benches)) {
+  for (let i = 0; i < WARMUP_ITERATIONS; i++) {
+    fn();
+  }
+  const start = performance.now();
+  for (let i = 0; i < ITERATIONS; i++) {
+    fn();
+  }
+  const elapsed = performance.now() - start;
+  results.push({ name, ops: (ITERATIONS / elapsed) * 1000 });
+}
+
+const fastest = Math.max(...results.map(({ ops }) => ops));
+for (const { name, ops } of results) {
+  const opsStr = ops.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  const relative = (ops / fastest).toFixed(2);
+  console.log(`${name.padEnd(24)} ${opsStr.padStart(15)} ops/s  ${relative}x`);
+}
