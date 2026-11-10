@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "Davlatjon Shavkatov <opensource@dalisoft.uz>",
   "type": "module",
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.4",
   "scripts": {
     "lint": "biome check . && rumdl check .",
     "format": "biome check --write . && rumdl fmt .",
